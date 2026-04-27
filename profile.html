@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Profile</title>
+    <style>
+        body{ font-family:Arial; background:#eef; }
+        .box{ width:420px; margin:40px auto; background:#fff; padding:20px; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.2); }
+        input,textarea{ width:100%; padding:8px; margin:6px 0; border:1px solid #ccc; border-radius:5px; box-sizing: border-box; }
+        button{ padding:10px; width:100%; cursor:pointer; background:#4CAF50; color:white; border:none; border-radius:5px; }
+        button:hover{ background:#45a049; }
+        .profile-img{ display:block; margin:auto; margin-bottom:10px; border-radius:50%; border: 3px solid #4CAF50; object-fit: cover; }
+        .qr-box{ text-align:center; margin-top:20px; border-top: 1px solid #eee; padding-top: 10px; }
+        /* బటన్ స్టైల్ */
+        .back-btn { text-decoration: none; color: #4CAF50; font-weight: bold; font-size: 14px; display: inline-block; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+<div class="box">
+    <a href="/employee_dashboard" class="back-btn">⬅️ Back to Dashboard</a>
+
+    <h2 style="text-align:center; margin-top:0;">My Profile</h2>
+    
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}<p style="color:green; text-align:center;">{{ messages[0] }}</p>{% endif %}
+    {% endwith %}
+
+    <div style="text-align: center;">
+        {% if employee.photo %}
+        <img class="profile-img" src="{{ url_for('static', filename='uploads/' + employee.photo) }}" width="120" height="120">
+        {% else %}
+        <p style="color:gray;">No photo uploaded</p>
+        {% endif %}
+    </div>
+
+    <form method="POST" enctype="multipart/form-data">
+        <label>Date of Birth:</label>
+        <input name="dob" type="date" value="{{ employee.dob or '' }}">
+        <input name="phone" placeholder="Phone Number" value="{{ employee.phone or '' }}">
+        <input name="address" placeholder="Address" value="{{ employee.address or '' }}">
+        <input name="qualification" placeholder="Qualification" value="{{ employee.qualification or '' }}">
+        <input name="skills" placeholder="Skills" value="{{ employee.skills or '' }}">
+        <input name="role" placeholder="Role" value="{{ employee.role or '' }}">
+        <textarea name="bio" placeholder="Bio">{{ employee.bio or '' }}</textarea>
+        
+        <label>Upload Photo (Strictly JPG):</label>
+        <input type="file" name="photo" accept=".jpg,.jpeg">
+        
+        <button type="submit">Update Profile</button>
+    </form>
+
+    <div class="qr-box">
+        <h3>Your QR Code</h3>
+        <img src="{{ qr_path }}" width="150">
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Dashboard - EMS</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background:
+                linear-gradient(rgba(0, 0, 0, 0.50), rgba(0, 0, 0, 0.50)),
+                url("{{ url_for('static', filename='images/employee_bg.jpg') }}") no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            color: white;
+            overflow-x: hidden;
+            padding: 10px 15px 15px;
+        }
+
+        /* Welcome Header */
+        .welcome-container {
+            margin-top: 8px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.16);
+            padding: 12px 32px;
+            border-radius: 28px;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.28);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+        }
+
+        .welcome-container h1 {
+            font-size: 18px;
+            color: #ffffff;
+            font-weight: 700;
+            text-shadow: 2px 2px 6px rgba(0,0,0,0.45);
+        }
+
+        .user-name {
+            color: #00c8ff;
+            text-transform: capitalize;
+        }
+
+        .sub-title {
+            font-size: 14px;
+            color: #f1f1f1;
+            font-weight: 500;
+            margin-top: 4px;
+        }
+
+        /* Flash Messages */
+        .flash-container {
+            width: 90%;
+            max-width: 1050px;
+            margin-top: 14px;
+        }
+
+        .flash-msg {
+            background: rgba(212, 237, 218, 0.95);
+            color: #155724;
+            padding: 10px;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 700;
+            margin-bottom: 10px;
+            box-shadow: 0 5px 12px rgba(0,0,0,0.10);
+            border: 1px solid #c3e6cb;
+            font-size: 13px;
+        }
+
+        /* Stats Section */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            width: 90%;
+            max-width: 1050px;
+            margin-top: 14px;
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.94);
+            padding: 14px;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 8px 18px rgba(0,0,0,0.22);
+        }
+
+        .label {
+            font-size: 10px;
+            color: #777;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .val {
+            font-size: 16px;
+            font-weight: 800;
+            color: #111;
+        }
+
+        /* Menu Grid */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            width: 90%;
+            max-width: 1050px;
+            margin-top: 18px;
+        }
+
+        .box,
+        .qr-container {
+            background: rgba(255, 255, 255, 0.95);
+            color: #222;
+            border-radius: 18px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            transition: 0.28s ease;
+            border: none;
+            font-size: 12px;
+            min-height: 110px;
+            padding: 14px;
+        }
+
+        .box:hover:not(.marked) {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 28px rgba(0,0,0,0.28);
+            background: rgba(255,255,255,1);
+        }
+
+        .box i {
+            font-size: 22px;
+            margin-bottom: 8px;
+            color: #4facfe;
+        }
+
+        .marked {
+            background: #e8f5e9 !important;
+            border: 2px solid #2ecc71 !important;
+            color: #27ae60 !important;
+            cursor: not-allowed;
+        }
+
+        .qr-container img {
+            width: 62px;
+            height: 62px;
+            border-radius: 10px;
+            object-fit: cover;
+        }
+
+        .qr-text {
+            font-size: 10px;
+            margin-top: 6px;
+            color: #666;
+            font-weight: 600;
+        }
+
+        /* Logout */
+        .logout-btn {
+            margin-top: 20px;
+            margin-bottom: 12px;
+            background: #ff4d5a;
+            color: white;
+            padding: 11px 42px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 700;
+            box-shadow: 0 5px 15px rgba(255, 77, 90, 0.35);
+            transition: 0.3s;
+            font-size: 14px;
+        }
+
+        .logout-btn:hover {
+            background: #ff6677;
+            transform: scale(1.04);
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .menu-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .menu-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .welcome-container {
+                padding: 10px 20px;
+            }
+
+            .welcome-container h1 {
+                font-size: 17px;
+            }
+
+            .sub-title {
+                font-size: 13px;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .menu-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .welcome-container {
+                width: 92%;
+                border-radius: 24px;
+            }
+
+            .welcome-container h1 {
+                font-size: 16px;
+            }
+
+            .logout-btn {
+                width: 85%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Welcome -->
+    <div class="welcome-container">
+        <h1>🧑‍💼 Welcome, <span class="user-name">{{ session['user'] }}</span>!</h1>
+        <div class="sub-title">Employee Dashboard</div>
+    </div>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="flash-container">
+          {% for message in messages %}
+            <div class="flash-msg">
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <!-- Stats -->
+    <div class="stats-grid">
+        <div class="stat-box">
+            <span class="label">Attendance</span>
+            <div class="val">{% if present %}1{% else %}0{% endif %}</div>
+        </div>
+
+        <div class="stat-box">
+            <span class="label" style="color: #e74c3c;">Absents</span>
+            <div class="val">{% if present %}0{% else %}1{% endif %}</div>
+        </div>
+
+        <div class="stat-box">
+            <span class="label">Last Punch</span>
+            <div class="val">{% if present %}Marked Today{% else %}Not In Yet{% endif %}</div>
+        </div>
+    </div>
+
+    <!-- Menu -->
+    <div class="menu-grid">
+
+        <a href="{{ url_for('profile') }}" class="box">
+            <i class="fas fa-id-card"></i>
+            Profile (QR)
+        </a>
+
+        <a href="{{ url_for('my_salary') }}" class="box">
+            <i class="fas fa-sack-dollar" style="color: #f39c12;"></i>
+            My Salary
+        </a>
+
+        <a href="{{ url_for('attendance_history') }}" class="box">
+            <i class="fas fa-clipboard-list"></i>
+            My Attendance
+        </a>
+
+        <a href="{{ url_for('punch_system') }}" class="box">
+            <i class="fas fa-clock-rotate-left"></i>
+            Punch System
+        </a>
+
+        <a href="{{ url_for('apply_leave') }}" class="box">
+            <i class="fas fa-calendar-plus" style="color: #e67e22;"></i>
+            Apply Leave
+        </a>
+
+        <a href="{{ url_for('my_leaves') }}" class="box">
+            <i class="fas fa-calendar-check" style="color: #27ae60;"></i>
+            My Leaves
+        </a>
+
+        <a href="{{ url_for('work_tracker') }}" class="box">
+            <i class="fas fa-file-signature" style="color: #3498db;"></i>
+            Work Report
+        </a>
+
+        <a href="{{ url_for('employee_notice_board') }}" class="box">
+            <i class="fas fa-bullhorn" style="color: #8e44ad;"></i>
+            Notice Board
+        </a>
+
+        {% if present %}
+            <div class="box marked">
+                <i class="fas fa-check-circle" style="color: #27ae60;"></i>
+                Marked Today
+            </div>
+        {% else %}
+            <div class="qr-container">
+                <img src="{{ qr_path }}" alt="Scan QR">
+                <p class="qr-text">ID QR</p>
+            </div>
+
+            <form action="{{ url_for('mark_attendance') }}" method="POST" style="display: contents;">
+                <button type="submit" class="box" style="width: 100%; cursor: pointer; border:none;">
+                    <i class="fas fa-fingerprint" style="color: #2ecc71;"></i>
+                    Manual Punch
+                </button>
+            </form>
+        {% endif %}
+    </div>
+
+    <!-- Logout -->
+    <a href="{{ url_for('logout') }}" class="logout-btn">
+        <i class="fas fa-sign-out-alt"></i> LOGOUT
+    </a>
+
+</body>
+</html>

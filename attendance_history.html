@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Attendance History</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Poppins', sans-serif; background: #f0f2f5; padding: 20px; color: #333; }
+        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 900px; margin: auto; }
+        h2 { text-align: center; color: #4b0082; margin-bottom: 20px; }
+        .top-bar { display: flex; flex-wrap: wrap; gap: 15px; align-items: center; justify-content: space-between; margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px; border: 1px solid #eee; }
+        input[type="date"] { padding: 8px; border-radius: 5px; border: 1px solid #ccc; outline: none; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: center; }
+        th { background: #343a40; color: white; }
+        .present { background: #d4edda; color: #155724; font-weight: bold; border-radius: 4px; padding: 5px 10px; }
+        .absent { background: #f8d7da; color: #721c24; font-weight: bold; border-radius: 4px; padding: 5px 10px; }
+        .btn { padding: 10px 18px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; text-decoration: none; display: inline-block; transition: 0.3s; }
+        .btn-search { background: #4b0082; color: white; }
+        .btn-reset { background: #6c757d; color: white; }
+        .back-link { display: block; margin-top: 25px; text-align: center; text-decoration: none; color: #4b0082; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>🕒 My Attendance History</h2>
+        
+        <div class="top-bar">
+            <form method="GET" action="/attendance_history" style="display: flex; align-items: center; gap: 10px;">
+                <label><b>Search by Date:</b></label>
+                <input type="date" name="date" value="{{ request.args.get('date', '') }}">
+                <button type="submit" class="btn btn-search">🔍 Filter</button>
+                <a href="/attendance_history" class="btn btn-reset">🔄 Reset</a>
+            </form>
+
+            
+        </div>
+
+        <table>
+            <thead>
+                <tr><th>Date (YYYY-MM-DD)</th><th>Status</th></tr>
+            </thead>
+            <tbody>
+                {% for r in records %}
+                <tr>
+                    <td>{{ r.date }}</td>
+                    <td>
+                        <span class="{{ r.status.lower() }}">
+                            {% if r.status == 'Present' %}✔ Present{% else %}❌ Absent{% endif %}
+                        </span>
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="2" style="text-align:center; padding:30px; color:#999;">No records found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a href="/employee_dashboard" class="back-link">⬅ Back to Dashboard</a>
+    </div>
+</body>
+</html>

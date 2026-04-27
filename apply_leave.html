@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Apply Leave - EMS</title>
+    <style>
+        body { font-family: 'Poppins', sans-serif; background: #f4f7fc; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 90vh; }
+        .box { width: 450px; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); position: relative; }
+        
+        /* 🚀 Back Button at TOP */
+        .back-link { position: absolute; top: 15px; left: 15px; text-decoration: none; color: #4b0082; font-weight: bold; font-size: 14px; }
+        
+        h2 { text-align: center; color: #333; margin-top: 20px; }
+        label { display: block; margin: 10px 0 5px; font-weight: bold; color: #555; }
+        input, textarea { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; outline: none; }
+        textarea { height: 100px; resize: none; }
+        button { width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        button:hover { opacity: 0.9; transform: translateY(-2px); }
+    </style>
+</head>
+<body>
+
+<div class="box">
+    <a href="/employee_dashboard" class="back-link">⬅ Back</a>
+    <h2>📝 Apply for Leave</h2>
+    <form method="POST">
+        <label>From Date</label>
+        <input type="date" name="from_date" required>
+        
+        <label>To Date</label>
+        <input type="date" name="to_date" required>
+        
+        <label>Reason</label>
+        <textarea name="reason" placeholder="Explain your reason here..." required></textarea>
+        
+        <button type="submit">Submit Request</button>
+    </form>
+</div>
+
+</body>
+</html>

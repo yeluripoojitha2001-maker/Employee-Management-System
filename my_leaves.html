@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Leave History - EMS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Poppins', sans-serif; background: #f4f7fc; padding: 20px; }
+        .container { max-width: 1000px; margin: auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 5px 25px rgba(0,0,0,0.05); }
+        
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .header h2 { margin: 0; color: #2c3e50; font-size: 22px; }
+        
+        .back-btn { text-decoration: none; color: #4b0082; font-weight: bold; background: #f0ecff; padding: 10px 20px; border-radius: 8px; border: 1px solid #4b0082; transition: 0.3s; }
+        .back-btn:hover { background: #4b0082; color: white; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 15px; text-align: center; border-bottom: 1px solid #eee; }
+        th { background: #4b0082; color: white; font-weight: 600; }
+        
+        /* Status Badges */
+        .status { font-weight: bold; padding: 6px 12px; border-radius: 20px; font-size: 12px; text-transform: capitalize; }
+        .pending { background: #fff3cd; color: #856404; }
+        .approved { background: #d4edda; color: #155724; }
+        .rejected { background: #f8d7da; color: #721c24; }
+
+        /* Delete/Cancel Button Style */
+        .del-btn { color: #e74c3c; text-decoration: none; font-size: 18px; transition: 0.2s; }
+        .del-btn:hover { color: #c0392b; transform: scale(1.1); }
+        .no-action { color: #ccc; cursor: not-allowed; }
+
+        tr:hover { background: #fcfaff; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h2><i class="fas fa-history" style="color: #4b0082; margin-right: 10px;"></i> My Leave Status</h2>
+        <a href="/employee_dashboard" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+    </div>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div style="text-align: center; margin-bottom: 15px; color: #27ae60; font-weight: bold;">
+            {{ messages[0] }}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <table>
+        <thead>
+            <tr>
+                <th>From</th>
+                <th>To</th>
+                <th>Reason</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in data %}
+            <tr>
+                <td>{{ r.from_date }}</td>
+                <td>{{ r.to_date }}</td>
+                <td>{{ r.reason }}</td>
+                <td>
+                    <span class="status {{ r.status.lower() }}">{{ r.status }}</span>
+                </td>
+                <td>
+                    {% if r.status == 'Pending' %}
+                        <a href="/delete_leave/{{ r.id }}" class="del-btn" title="Cancel Request" onclick="return confirm('Are you sure you want to cancel this leave?')">
+                            <i class="fas fa-trash-alt"></i>
+                        </a>
+                    {% else %}
+                        <span class="no-action" title="Decision taken"><i class="fas fa-lock"></i></span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5" style="padding: 40px; color: #999;">
+                    <i class="fas fa-info-circle"></i> No leaves applied yet.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>

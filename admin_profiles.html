@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Employee Profiles Control</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Poppins', sans-serif; background: #f0f2f5; padding: 30px; margin: 0; }
+        
+        .header-container {
+            display: flex; justify-content: space-between; align-items: center;
+            max-width: 1200px; margin: 0 auto 30px auto;
+        }
+
+        h2 { color: #2c3e50; margin: 0; font-weight: 700; }
+
+        .back-admin {
+            text-decoration: none; background: #4b0082; color: white;
+            padding: 10px 20px; border-radius: 8px; font-weight: bold;
+            transition: 0.3s; box-shadow: 0 4px 10px rgba(75, 0, 130, 0.2);
+        }
+        .back-admin:hover { background: #3a0066; transform: translateY(-2px); }
+
+        /* 🗂️ Grid Layout for Cards */
+        .profile-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px; max-width: 1200px; margin: auto;
+        }
+
+        /* 📦 Card Style */
+        .card {
+            background: #fff; padding: 20px; border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            text-align: center; border: 1px solid #eee; transition: 0.3s;
+        }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.12); }
+
+        img.profile-pic {
+            border-radius: 50%; margin-bottom: 15px;
+            border: 3px solid #4b0082; object-fit: cover;
+            background: #f9f9f9;
+        }
+
+        .info { text-align: left; font-size: 14px; margin-top: 15px; color: #555; line-height: 1.6; }
+        .info b { color: #2c3e50; width: 110px; display: inline-block; }
+
+        .qr-section {
+            margin-top: 20px; padding-top: 15px;
+            border-top: 1px dashed #ddd;
+        }
+        .qr-section img {
+            border: 1px solid #eee; padding: 5px; border-radius: 8px;
+            background: #fff;
+        }
+
+        .delete-btn {
+            margin-top: 20px; display: block; background: #ff4757;
+            color: white; padding: 10px; border-radius: 8px;
+            text-decoration: none; font-weight: bold; transition: 0.3s;
+        }
+        .delete-btn:hover { background: #ff6b81; }
+
+        .no-photo {
+            height: 110px; width: 110px; background: #e0e0e0;
+            border-radius: 50%; margin: 0 auto 15px auto;
+            line-height: 110px; color: #888; font-weight: bold;
+        }
+
+        /* Flash Message */
+        .flash { background: #d4edda; color: #155724; padding: 10px; border-radius: 8px; margin-bottom: 20px; text-align: center; }
+    </style>
+</head>
+<body>
+
+<div class="header-container">
+    <h2><i class="fas fa-users-cog"></i> Employee Profiles Control</h2>
+    <a href="/admin_dashboard" class="back-admin"><i class="fas fa-home"></i> Back to Dashboard</a>
+</div>
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <div style="max-width: 1200px; margin: auto;">
+        <div class="flash">{{ messages[0] }}</div>
+    </div>
+  {% endif %}
+{% endwith %}
+
+<div class="profile-grid">
+    {% for p in employees %}
+    <div class="card">
+        {% if p.photo %}
+        <img class="profile-pic" src="{{ url_for('static', filename='uploads/' + p.photo) }}" width="110" height="110">
+        {% else %}
+        <div class="no-photo">No Photo</div>
+        {% endif %}
+
+        <div class="info">
+            <b><i class="fas fa-user"></i> Name:</b> {{ p.username }}<br>
+            <b><i class="fas fa-phone"></i> Phone:</b> {{ p.phone or 'N/A' }}<br>
+            <b><i class="fas fa-briefcase"></i> Role:</b> {{ p.role or 'Employee' }}<br>
+            <b><i class="fas fa-map-marker-alt"></i> Address:</b> {{ p.address or 'N/A' }}<br>
+            <b><i class="fas fa-graduation-cap"></i> Qual:</b> {{ p.qualification or 'N/A' }}<br>
+            <b><i class="fas fa-code"></i> Skills:</b> {{ p.skills or 'N/A' }}
+        </div>
+
+        <div class="qr-section">
+            <small style="font-weight: bold; color: #7f8c8d;">Personal Attendance QR</small><br>
+            <img src="{{ url_for('static', filename='qrcodes/qr_' + p.username + '.png') }}" width="100" height="100">
+        </div>
+
+        <a href="/delete_user/{{ p.id }}" onclick="return confirm('Are you sure you want to delete {{ p.username }}?')" class="delete-btn">
+            <i class="fas fa-trash-alt"></i> Delete User
+        </a>
+    </div>
+    {% else %}
+    <div style="text-align:center; grid-column: 1/-1; padding: 50px; color: #888;">
+        <h3>No employee profiles found.</h3>
+    </div>
+    {% endfor %}
+</div>
+
+</body>
+</html>

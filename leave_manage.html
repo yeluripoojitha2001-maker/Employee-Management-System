@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Leave Management - Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Poppins', sans-serif; background: #f4f7fc; padding: 20px; }
+        .container { max-width: 1100px; margin: auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 5px 25px rgba(0,0,0,0.1); }
+        .header-section { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .back-btn { text-decoration: none; color: #764ba2; font-weight: bold; background: #f0ecff; padding: 10px 20px; border-radius: 8px; border: 1px solid #764ba2; transition: 0.3s; }
+        .back-btn:hover { background: #764ba2; color: white; }
+        h2 { color: #333; margin: 0; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 15px; border-bottom: 1px solid #eee; text-align: center; }
+        th { background: #343a40; color: white; }
+        .status-badge { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; text-transform: capitalize; }
+        .pending { background: #fff3cd; color: #856404; }
+        .approved { background: #d4edda; color: #155724; }
+        .rejected { background: #f8d7da; color: #721c24; }
+        .btn { padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; text-decoration: none; font-size: 13px; display: inline-block; }
+        .approve { background: #28a745; color: white; margin-right: 5px; }
+        .reject { background: #dc3545; color: white; }
+        .done { color: #666; font-style: italic; font-weight: bold; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header-section">
+        <h2>📝 Leave Management Requests</h2>
+        <a href="/admin_dashboard" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+    </div>
+
+    <table>
+        <thead>
+            <tr><th>Employee</th><th>From Date</th><th>To Date</th><th>Reason</th><th>Status</th><th>Action</th></tr>
+        </thead>
+        <tbody>
+            {% for r in data %}
+            <tr>
+                <td><b>{{ r.username }}</b></td>
+                <td>{{ r.from_date }}</td>
+                <td>{{ r.to_date }}</td>
+                <td>{{ r.reason }}</td>
+                <td><span class="status-badge {{ r.status.lower() }}">{{ r.status }}</span></td>
+                <td>
+                    {% if r.status == "Pending" %}
+                        <a href="/approve_leave/{{ r.id }}" class="btn approve">Approve</a>
+                        <a href="/reject_leave/{{ r.id }}" class="btn reject">Reject</a>
+                    {% else %}
+                        <span class="done"><i class="fas fa-check-double"></i> Decision Taken</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="6" style="padding: 40px; color: #999; text-align:center;">No leave requests found.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Notice Board</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            margin: 0;
+            padding: 30px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        h2 {
+            text-align: center;
+            color: #4b0082;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background: #4b0082;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #36005f;
+        }
+
+        .notice {
+            background: #f8f9ff;
+            border-left: 6px solid #667eea;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 10px;
+        }
+
+        .notice h3 {
+            margin: 0;
+            color: #333;
+        }
+
+        .notice p {
+            margin-top: 8px;
+            color: #555;
+        }
+
+        .delete-btn {
+            display: inline-block;
+            margin-top: 10px;
+            color: white;
+            background: crimson;
+            padding: 8px 12px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .back {
+            display: inline-block;
+            margin-bottom: 20px;
+            text-decoration: none;
+            color: #4b0082;
+            font-weight: bold;
+        }
+
+        .flash {
+            background: #d4edda;
+            color: #155724;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a class="back" href="{{ url_for('admin_dashboard') }}">⬅ Back to Dashboard</a>
+        <h2>📢 Admin Notice Board</h2>
+
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            {% for message in messages %}
+              <div class="flash">{{ message }}</div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <form method="POST">
+            <input type="text" name="title" placeholder="Enter Notice Title" required>
+            <textarea name="message" rows="4" placeholder="Enter Notice Message" required></textarea>
+            <button type="submit">Add Notice</button>
+        </form>
+
+        <hr>
+
+        {% for notice in notices %}
+            <div class="notice">
+                <h3>{{ notice['title'] }}</h3>
+                <p>{{ notice['message'] }}</p>
+                <a class="delete-btn" href="{{ url_for('delete_notice', id=notice['id']) }}">Delete</a>
+            </div>
+        {% else %}
+            <p style="text-align:center;">No notices added yet.</p>
+        {% endfor %}
+    </div>
+</body>
+</html>

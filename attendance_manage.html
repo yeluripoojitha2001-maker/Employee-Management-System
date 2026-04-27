@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Attendance Management - Admin</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            background: white;
+            border-radius: 18px;
+            padding: 30px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 25px;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .btn {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            cursor: pointer;
+            font-size: 14px;
+            color: white;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-back { background: #6c757d; }
+        .btn-save { background: #28a745; }
+        .btn-filter { background: #007bff; }
+        .btn-reset { background: #dc3545; }
+        .btn-download { background: #17a2b8; }
+        .btn-upload { background: #6f42c1; }
+
+        .form-section,
+        .filter-section,
+        .upload-section {
+            background: #f8f9fa;
+            padding: 18px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            align-items: center;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            overflow: hidden;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 14px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background: #343a40;
+            color: white;
+        }
+
+        tr:hover {
+            background: #f1f1f1;
+        }
+
+        .present {
+            color: green;
+            font-weight: bold;
+        }
+
+        .absent {
+            color: red;
+            font-weight: bold;
+        }
+
+        .flash {
+            background: #d4edda;
+            color: #155724;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            border-radius: 6px;
+            background: #ffc107;
+            color: black;
+            text-decoration: none;
+            font-size: 13px;
+        }
+
+        @media (max-width: 768px) {
+            .top-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                font-size: 13px;
+            }
+
+            th, td {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>📅 Attendance Management</h1>
+
+    <div class="top-bar">
+        <a href="/admin_dashboard" class="btn btn-back">⬅ Back to Dashboard</a>
+        <div>
+            <a href="/download_pdf" class="btn btn-download">⬇ Download PDF</a>
+            <a href="/export_attendance" class="btn btn-download">⬇ Export CSV</a>
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for msg in messages %}
+          <div class="flash" id="flashMsg">{{ msg }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <!-- Manual Attendance Entry -->
+    <div class="form-section">
+        <h3>➕ Add / Update Attendance</h3>
+        <form method="POST" action="/admin_mark_attendance">
+            <div class="form-grid">
+                <input type="text" name="username" placeholder="Employee Username" required>
+                <input type="date" name="date" required>
+                <select name="status" required>
+                    <option value="">Select Status</option>
+                    <option value="Present">Present</option>
+                    <option value="Absent">Absent</option>
+                </select>
+                <button type="submit" class="btn btn-save">💾 Save</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="filter-section">
+        <h3>🔍 Filter Attendance</h3>
+        <form method="GET" action="/attendance">
+            <div class="form-grid">
+                <input type="text" name="name" placeholder="Employee Username" value="{{ request.args.get('name','') }}">
+                
+                <select name="status">
+                    <option value="All" {% if request.args.get('status') == 'All' or not request.args.get('status') %}selected{% endif %}>All</option>
+                    <option value="Present" {% if request.args.get('status') == 'Present' %}selected{% endif %}>Present</option>
+                    <option value="Absent" {% if request.args.get('status') == 'Absent' %}selected{% endif %}>Absent</option>
+                </select>
+                
+                <input type="date" name="date" value="{{ request.args.get('date','') }}">
+                
+                <button type="submit" class="btn btn-filter">🔍 Filter</button>
+                
+                <a href="/attendance" class="btn btn-reset">Reset</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- CSV Upload -->
+    <div class="upload-section">
+        <h3>📤 Upload Attendance CSV</h3>
+        <form method="POST" action="/upload_attendance" enctype="multipart/form-data">
+            <div class="form-grid">
+                <input type="file" name="file" accept=".csv" required>
+                <button type="submit" class="btn btn-upload">Upload CSV</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Attendance Table -->
+    <h3>📋 Attendance Records</h3>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Username</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+        {% for r in records %}
+        <tr>
+            <td>{{ r.id }}</td>
+            <td>{{ r.username }}</td>
+            <td>{{ r.date }}</td>
+            <td class="{{ r.status|lower }}">{{ r.status }}</td>
+            <td>
+                {% if r.status == 'Present' %}
+                    {% set next_status = 'Absent' %}
+                {% else %}
+                    {% set next_status = 'Present' %}
+                {% endif %}
+                <a class="action-btn" href="/admin_mark_attendance?username={{r.username}}&date={{r.date}}&status={{next_status}}">
+                    Change to {{ next_status }}
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+</div>
+
+<script>
+    setTimeout(() => {
+        const flash = document.getElementById("flashMsg");
+        if (flash) {
+            flash.style.display = "none";
+        }
+    }, 3000);
+</script>
+
+</body>
+</html>

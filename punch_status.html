@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Punch Status</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            background: white;
+            border-radius: 18px;
+            padding: 30px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 25px;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .btn {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            cursor: pointer;
+            font-size: 14px;
+            color: white;
+            display: inline-block;
+        }
+
+        .btn-back { background: #6c757d; }
+        .btn-filter { background: #007bff; }
+        .btn-reset { background: #dc3545; }
+
+        .filter-section {
+            background: #f8f9fa;
+            padding: 18px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            align-items: center;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            overflow: hidden;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 14px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background: #343a40;
+            color: white;
+        }
+
+        tr:hover {
+            background: #f1f1f1;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 20px;
+            color: gray;
+            font-size: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .top-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                font-size: 13px;
+            }
+
+            th, td {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🕒 Admin Punch Status</h1>
+
+    <div class="top-bar">
+        <a href="/admin_dashboard" class="btn btn-back">⬅ Back to Dashboard</a>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="filter-section">
+        <h3>🔍 Filter Punch Report</h3>
+        <form method="GET" action="/admin_punch_status" class="filter-section">
+            <div class="form-grid">
+                <input type="text" name="username" placeholder="Enter Employee Username" value="{{ request.args.get('username', '') }}">
+                <input type="date" name="date" value="{{ request.args.get('date', '') }}">
+                <button type="submit" class="btn btn-filter">Filter Report</button>
+                <a href="/admin_punch_status" class="btn btn-reset">Reset</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Punch Status Table -->
+    <h3>📋 Punch Records</h3>
+    {% if data %}
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Username</th>
+            <th>Date</th>
+            <th>Punch In</th>
+            <th>Punch Out</th>
+            <th>Work Hours</th>
+        </tr>
+        {% for row in data %}
+        <tr>
+            <td>{{ row.id }}</td>
+            <td>{{ row.username }}</td>
+            <td>{{ row.date }}</td>
+            <td>{{ row.punch_in if row.punch_in else '-' }}</td>
+            <td>{{ row.punch_out if row.punch_out else '-' }}</td>
+            <td>{{ row.work_hours if row.work_hours else '-' }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+        <div class="empty">No punch records found.</div>
+    {% endif %}
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Employee Work Reports</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f4f7fc; margin: 0; padding: 20px; }
+        .container { max-width: 1000px; margin: auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        h2 { color: #333; border-bottom: 2px solid #4b0082; padding-bottom: 10px; display: inline-block; }
+        
+        /* 🔍 SEARCH & FILTER */
+        .filter-box { background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 20px; display: flex; gap: 15px; align-items: flex-end; }
+        .filter-box input { padding: 8px; border: 1px solid #ccc; border-radius: 5px; }
+        .btn-search { background: #4b0082; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; }
+
+        /* 📊 TABLE */
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th { background: #333; color: white; padding: 12px; text-align: left; }
+        td { padding: 12px; border-bottom: 1px solid #eee; color: #444; vertical-align: top; }
+        tr:hover { background: #f9f9f9; }
+
+        .status-badge { background: #e8f5e9; color: #2e7d32; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+        .task-text { font-size: 14px; line-height: 1.5; color: #555; max-width: 400px; }
+        
+        .back-link { display: inline-block; margin-top: 20px; text-decoration: none; color: #4b0082; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>📋 Employee Work Reports</h2>
+
+    <form method="GET" action="/admin_work_reports" class="filter-box">
+        <div>
+            <label style="font-size: 12px; font-weight: bold;">Employee Name:</label><br>
+            <input type="text" name="username" placeholder="Search name..." value="{{ request.args.get('username', '') }}">
+        </div>
+        <div>
+            <label style="font-size: 12px; font-weight: bold;">Date:</label><br>
+            <input type="date" name="date" value="{{ request.args.get('date', '') }}">
+        </div>
+        <button type="submit" class="btn-search">🔍 Filter Reports</button>
+        <a href="/admin_work_reports" style="font-size: 13px; color: #666; margin-left: 10px;">Clear</a>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Employee</th>
+                <th>Submission Date</th>
+                <th>Task Details</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for w in reports %}
+            <tr>
+                <td><b>{{ w.username }}</b></td>
+                <td>{{ w.date }}</td>
+                <td><div class="task-text">{{ w.task }}</div></td>
+                <td><span class="status-badge">Submitted</span></td>
+            </tr>
+            {% endfor %}
+            
+            {% if not reports %}
+            <tr>
+                <td colspan="4" style="text-align: center; padding: 30px; color: gray;">No work reports found for the selected criteria.</td>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+
+    <a href="/admin_dashboard" class="back-link">⬅ Back to Dashboard</a>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EMS - Login</title>
+    <style>
+        body { font-family: Arial; background-image: url("/static/images/login-bg.jpg"); background-size: cover; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .container { width: 300px; background: white; padding: 30px; border-radius: 12px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        input, select { width: 90%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; }
+        button { padding: 12px; width: 100%; background: black; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        button:hover { background: #333; }
+        .reg-link { margin-top: 15px; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Login</h2>
+    <input type="text" id="username" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
+    <select id="role">
+        <option value="">Select Role</option>
+        <option value="admin">Admin</option>
+        <option value="employee">Employee</option>
+    </select>
+    <button onclick="login()">Login</button>
+    <div class="reg-link">New user? <a href="/register_page">Register here</a></div>
+</div>
+
+<script>
+function login(){
+    let u = document.getElementById("username").value;
+    let p = document.getElementById("password").value;
+    let r = document.getElementById("role").value;
+
+    fetch("/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: u, password: p, role: r })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if(data.status == "success") {
+            if(r == "admin") { window.location = "/admin_dashboard"; }
+            else { window.location = "/employee_dashboard"; }
+        } else {
+            alert("Invalid Login!");
+        }
+    })
+    .catch(err => console.log(err));
+}
+</script>
+
+</body>
+</html>
